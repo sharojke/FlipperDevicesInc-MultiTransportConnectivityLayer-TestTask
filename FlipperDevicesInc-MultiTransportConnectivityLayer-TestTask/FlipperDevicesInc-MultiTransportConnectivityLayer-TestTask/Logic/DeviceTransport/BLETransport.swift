@@ -107,6 +107,8 @@ extension BLETransport {
             mockWiFiNetworks: mockWiFiNetworks,
             connectsSuccessfully: connectsSuccessfully,
             sendsRequestSuccessfully: sendsRequestSuccessfully
-        ).withSendingCancellationWhenNotConnected()
+        )
+        .withSendingCancellationWhenNotConnected()
+        .withSendingErrorWhenNotConnected()
     }
 }

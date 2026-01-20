@@ -21,6 +21,7 @@ private enum SupportedEndpoint: CaseIterable {
 
 final class BLETransport: DeviceTransport {
     let connectionState: AsyncStream<ConnectionState>
+    private let connectionStateManager: AnyDeviceTransportConnectionStateManager
     private let mockDeviceInfo: DeviceInfo
     private let mockWiFiNetworks: [WiFiNetwork]
     private let connectsSuccessfully: Bool
@@ -35,12 +36,14 @@ final class BLETransport: DeviceTransport {
     
     private init(
         connectionState: AsyncStream<ConnectionState>,
+        connectionStateManager: AnyDeviceTransportConnectionStateManager,
         mockDeviceInfo: DeviceInfo,
         mockWiFiNetworks: [WiFiNetwork],
-        connectsSuccessfully: Bool = .random(),
-        sendsRequestSuccessfully: Bool = .random()
+        connectsSuccessfully: Bool,
+        sendsRequestSuccessfully: Bool
     ) {
         self.connectionState = connectionState
+        self.connectionStateManager = connectionStateManager
         self.mockDeviceInfo = mockDeviceInfo
         self.mockWiFiNetworks = mockWiFiNetworks
         self.connectsSuccessfully = connectsSuccessfully
@@ -48,14 +51,18 @@ final class BLETransport: DeviceTransport {
     }
     
     func connect() async throws {
-        try await Task.longSleep()
-        guard !connectsSuccessfully else { return }
-        
-        throw ConnectionError()
+        await connectionStateManager.connect {
+            try await Task.longSleep()
+            guard !connectsSuccessfully else { return }
+            
+            throw ConnectionError()
+        }
     }
     
     func disconnect() async throws {
-        try await Task.mediumSleep()
+        await connectionStateManager.disconnect {
+            try await Task.mediumSleep()
+        }
     }
     
     func send<T: Decodable>(_ request: DeviceRequest) async throws -> T {
@@ -78,5 +85,27 @@ final class BLETransport: DeviceTransport {
         } else {
             throw SendingRequestError()
         }
+    }
+}
+
+extension BLETransport {
+    typealias GetConnectionStateManager = (ConnectionStateContinuation) -> AnyDeviceTransportConnectionStateManager
+    
+    static func create(
+        mockDeviceInfo: DeviceInfo,
+        mockWiFiNetworks: [WiFiNetwork],
+        connectsSuccessfully: Bool = .random(),
+        sendsRequestSuccessfully: Bool = .random(),
+        getConnectionStateManager: GetConnectionStateManager = DeviceTransportConnectionStateManager.init
+    ) -> BLETransport {
+        let connectionState = AsyncStream<ConnectionState>.makeStream()
+        return BLETransport(
+            connectionState: connectionState.stream,
+            connectionStateManager: getConnectionStateManager(connectionState.continuation),
+            mockDeviceInfo: mockDeviceInfo,
+            mockWiFiNetworks: mockWiFiNetworks,
+            connectsSuccessfully: connectsSuccessfully,
+            sendsRequestSuccessfully: sendsRequestSuccessfully
+        )
     }
 }

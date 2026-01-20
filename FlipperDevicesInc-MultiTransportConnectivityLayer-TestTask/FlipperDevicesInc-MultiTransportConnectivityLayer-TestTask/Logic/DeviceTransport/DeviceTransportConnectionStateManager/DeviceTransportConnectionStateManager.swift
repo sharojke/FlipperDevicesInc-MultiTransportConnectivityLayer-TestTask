@@ -4,6 +4,10 @@ actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateMa
     private let multicastAsyncStream: MulticastAsyncStream<ConnectionState>
     private(set) var connectionState: ConnectionState
     
+    nonisolated var connectionStateStream: AsyncStream<ConnectionState> {
+        multicastAsyncStream.stream()
+    }
+    
     init(multicastAsyncStream: MulticastAsyncStream<ConnectionState>) {
         self.multicastAsyncStream = multicastAsyncStream
         self.connectionState = .disconnected

@@ -20,7 +20,6 @@ private enum SupportedEndpoint: CaseIterable {
 }
 
 final class BLETransport: AnyDeviceTransport {
-    private let connectionStateStream: MulticastAsyncStream<ConnectionState>
     private let connectionStateManager: AnyDeviceTransportConnectionStateManager
     private let mockDeviceInfo: DeviceInfo
     private let mockWiFiNetworks: [WiFiNetwork]
@@ -34,19 +33,17 @@ final class BLETransport: AnyDeviceTransport {
         }
     }
     
-    var connectionState: AsyncStream<ConnectionState> {
-        connectionStateStream.stream()
+    var connectionStateStream: AsyncStream<ConnectionState> {
+        connectionStateManager.connectionStateStream
     }
     
     private init(
-        connectionStateStream: MulticastAsyncStream<ConnectionState>,
         connectionStateManager: AnyDeviceTransportConnectionStateManager,
         mockDeviceInfo: DeviceInfo,
         mockWiFiNetworks: [WiFiNetwork],
         connectsSuccessfully: Bool,
         sendsRequestSuccessfully: Bool
     ) {
-        self.connectionStateStream = connectionStateStream
         self.connectionStateManager = connectionStateManager
         self.mockDeviceInfo = mockDeviceInfo
         self.mockWiFiNetworks = mockWiFiNetworks
@@ -105,7 +102,6 @@ extension BLETransport {
     ) -> AnyDeviceTransport {
         let connectionStateStream = ConnectionStateStream()
         return BLETransport(
-            connectionStateStream: connectionStateStream,
             connectionStateManager: getConnectionStateManager(connectionStateStream),
             mockDeviceInfo: mockDeviceInfo,
             mockWiFiNetworks: mockWiFiNetworks,

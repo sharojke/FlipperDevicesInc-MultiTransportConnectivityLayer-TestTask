@@ -11,8 +11,8 @@ final class DeviceTransportWithSendingCancellationWhenNotConnected: AnyDeviceTra
         }
     }
     
-    var connectionState: AsyncStream<ConnectionState> {
-        decoratee.connectionState
+    var connectionStateStream: AsyncStream<ConnectionState> {
+        decoratee.connectionStateStream
     }
     
     init(decoratee: AnyDeviceTransport) {
@@ -46,7 +46,7 @@ final class DeviceTransportWithSendingCancellationWhenNotConnected: AnyDeviceTra
         Task { [weak self] in
             guard let self else { return }
             
-            for await connectionState in decoratee.connectionState {
+            for await connectionState in decoratee.connectionStateStream {
                 switch connectionState {
                 case .disconnected, .failed:
                     sendTasks.withLock { task in

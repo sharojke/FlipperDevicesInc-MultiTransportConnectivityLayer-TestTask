@@ -8,7 +8,7 @@ actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateMa
         multicastAsyncStream.stream()
     }
     
-    init(multicastAsyncStream: MulticastAsyncStream<ConnectionState>) {
+    init(multicastAsyncStream: MulticastAsyncStream<ConnectionState> = MulticastAsyncStream()) {
         self.multicastAsyncStream = multicastAsyncStream
         self.connectionState = .disconnected
     }

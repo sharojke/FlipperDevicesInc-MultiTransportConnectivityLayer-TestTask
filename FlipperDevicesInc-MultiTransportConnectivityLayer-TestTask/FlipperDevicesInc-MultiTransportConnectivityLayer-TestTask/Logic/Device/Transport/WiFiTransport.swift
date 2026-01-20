@@ -34,11 +34,11 @@ final class WiFiTransport: AnyDeviceTransport {
         connectionStateManager.connectionStateStream
     }
     
-    private init(
+    init(
         connectionStateManager: AnyDeviceTransportConnectionStateManager,
         mockDeviceInfo: DeviceInfo,
-        connectsSuccessfully: Bool,
-        sendsRequestSuccessfully: Bool
+        connectsSuccessfully: Bool = .random(),
+        sendsRequestSuccessfully: Bool = .random()
     ) {
         self.connectionStateManager = connectionStateManager
         self.mockDeviceInfo = mockDeviceInfo
@@ -80,27 +80,5 @@ final class WiFiTransport: AnyDeviceTransport {
         } else {
             throw SendingRequestError()
         }
-    }
-}
-
-extension WiFiTransport {
-    typealias ConnectionStateStream = MulticastAsyncStream<ConnectionState>
-    typealias GetConnectionStateManager = (ConnectionStateStream) -> AnyDeviceTransportConnectionStateManager
-    
-    static func create(
-        mockDeviceInfo: DeviceInfo,
-        connectsSuccessfully: Bool = .random(),
-        sendsRequestSuccessfully: Bool = .random(),
-        getConnectionStateManager: GetConnectionStateManager = DeviceTransportConnectionStateManager.init
-    ) -> AnyDeviceTransport {
-        let connectionStateStream = ConnectionStateStream()
-        return WiFiTransport(
-            connectionStateManager: getConnectionStateManager(connectionStateStream),
-            mockDeviceInfo: mockDeviceInfo,
-            connectsSuccessfully: connectsSuccessfully,
-            sendsRequestSuccessfully: sendsRequestSuccessfully
-        )
-        .withSendingCancellationWhenNotConnected()
-        .withSendingErrorWhenNotConnected()
     }
 }

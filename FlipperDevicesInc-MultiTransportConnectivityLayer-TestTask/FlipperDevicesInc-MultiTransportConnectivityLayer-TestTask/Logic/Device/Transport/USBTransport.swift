@@ -37,12 +37,12 @@ final class USBTransport: AnyDeviceTransport {
         connectionStateManager.connectionStateStream
     }
     
-    private init(
+    init(
         connectionStateManager: AnyDeviceTransportConnectionStateManager,
         mockDeviceInfo: DeviceInfo,
         mockWiFiNetworks: [WiFiNetwork],
-        connectsSuccessfully: Bool,
-        sendsRequestSuccessfully: Bool
+        connectsSuccessfully: Bool = .random(),
+        sendsRequestSuccessfully: Bool = .random()
     ) {
         self.connectionStateManager = connectionStateManager
         self.mockDeviceInfo = mockDeviceInfo
@@ -86,29 +86,5 @@ final class USBTransport: AnyDeviceTransport {
         } else {
             throw SendingRequestError()
         }
-    }
-}
-
-extension USBTransport {
-    typealias ConnectionStateStream = MulticastAsyncStream<ConnectionState>
-    typealias GetConnectionStateManager = (ConnectionStateStream) -> AnyDeviceTransportConnectionStateManager
-    
-    static func create(
-        mockDeviceInfo: DeviceInfo,
-        mockWiFiNetworks: [WiFiNetwork],
-        connectsSuccessfully: Bool = .random(),
-        sendsRequestSuccessfully: Bool = .random(),
-        getConnectionStateManager: GetConnectionStateManager = DeviceTransportConnectionStateManager.init
-    ) -> AnyDeviceTransport {
-        let connectionStateStream = ConnectionStateStream()
-        return USBTransport(
-            connectionStateManager: getConnectionStateManager(connectionStateStream),
-            mockDeviceInfo: mockDeviceInfo,
-            mockWiFiNetworks: mockWiFiNetworks,
-            connectsSuccessfully: connectsSuccessfully,
-            sendsRequestSuccessfully: sendsRequestSuccessfully
-        )
-        .withSendingCancellationWhenNotConnected()
-        .withSendingErrorWhenNotConnected()
     }
 }

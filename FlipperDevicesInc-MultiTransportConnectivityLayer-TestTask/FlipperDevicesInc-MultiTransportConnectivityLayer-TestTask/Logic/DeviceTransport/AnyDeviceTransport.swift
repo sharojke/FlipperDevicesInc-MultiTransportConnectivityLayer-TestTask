@@ -1,6 +1,6 @@
 import Foundation
 
-protocol DeviceTransport: Sendable {
+protocol AnyDeviceTransport: Sendable {
     typealias ConnectionStateContinuation = AsyncStream<ConnectionState>.Continuation
     
     var isAvailable: Bool { get async }

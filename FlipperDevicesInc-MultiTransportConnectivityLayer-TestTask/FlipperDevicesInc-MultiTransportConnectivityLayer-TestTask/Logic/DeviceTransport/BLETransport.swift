@@ -19,7 +19,7 @@ private enum SupportedEndpoint: CaseIterable {
     }
 }
 
-final class BLETransport: DeviceTransport {
+final class BLETransport: AnyDeviceTransport {
     let connectionState: AsyncStream<ConnectionState>
     private let connectionStateManager: AnyDeviceTransportConnectionStateManager
     private let mockDeviceInfo: DeviceInfo

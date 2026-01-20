@@ -1,10 +1,10 @@
 import Foundation
 
 actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateManager {
-    private let connectionStateContinuation: DeviceTransport.ConnectionStateContinuation
+    private let connectionStateContinuation: AnyDeviceTransport.ConnectionStateContinuation
     private(set) var connectionState: ConnectionState
     
-    init(connectionStateContinuation: DeviceTransport.ConnectionStateContinuation) {
+    init(connectionStateContinuation: AnyDeviceTransport.ConnectionStateContinuation) {
         self.connectionStateContinuation = connectionStateContinuation
         self.connectionState = .disconnected
     }

@@ -8,5 +8,5 @@ protocol AnyDeviceTransport: Sendable {
     
     func connect() async throws
     func disconnect() async throws
-    func send<T: Decodable>(_ request: DeviceRequest) async throws -> T
+    func send<T: Decodable & Sendable>(_ request: DeviceRequest) async throws -> T
 }

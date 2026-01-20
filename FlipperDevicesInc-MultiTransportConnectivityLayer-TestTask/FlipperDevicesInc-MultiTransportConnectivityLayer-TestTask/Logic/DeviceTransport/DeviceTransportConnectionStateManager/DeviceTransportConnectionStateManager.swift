@@ -1,11 +1,11 @@
 import Foundation
 
 actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateManager {
-    private let connectionStateContinuation: AnyDeviceTransport.ConnectionStateContinuation
+    private let multicastAsyncStream: MulticastAsyncStream<ConnectionState>
     private(set) var connectionState: ConnectionState
     
-    init(connectionStateContinuation: AnyDeviceTransport.ConnectionStateContinuation) {
-        self.connectionStateContinuation = connectionStateContinuation
+    init(multicastAsyncStream: MulticastAsyncStream<ConnectionState>) {
+        self.multicastAsyncStream = multicastAsyncStream
         self.connectionState = .disconnected
     }
 
@@ -37,7 +37,7 @@ actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateMa
     
     private func setConnectionState(_ connectionState: ConnectionState) {
         self.connectionState = connectionState
-        connectionStateContinuation.yield(connectionState)
+        multicastAsyncStream.yield(connectionState)
     }
 }
 

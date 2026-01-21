@@ -25,7 +25,6 @@ final class WiFiTransport: AnyDeviceTransport {
     private let connectionStateManager: AnyDeviceTransportConnectionStateManager
     private let mockDeviceInfo: DeviceInfo
     private let connectsSuccessfully: Bool
-    private let sendsRequestSuccessfully: Bool
     
     var isAvailable: Bool {
         get async {
@@ -41,13 +40,11 @@ final class WiFiTransport: AnyDeviceTransport {
     init(
         connectionStateManager: AnyDeviceTransportConnectionStateManager,
         mockDeviceInfo: DeviceInfo,
-        connectsSuccessfully: Bool = .random(),
-        sendsRequestSuccessfully: Bool = .random()
+        connectsSuccessfully: Bool = .random()
     ) {
         self.connectionStateManager = connectionStateManager
         self.mockDeviceInfo = mockDeviceInfo
         self.connectsSuccessfully = connectsSuccessfully
-        self.sendsRequestSuccessfully = sendsRequestSuccessfully
     }
     
     func connect() async throws {
@@ -80,11 +77,7 @@ final class WiFiTransport: AnyDeviceTransport {
     }
     
     private func response<T: Decodable>(_ data: Data) async throws -> T {
-        if sendsRequestSuccessfully {
-            try await Task.veryLongSleep()
-            return try JSONDecoder().decode(T.self, from: data)
-        } else {
-            throw SendingRequestError()
-        }
+        try await Task.longSleep()
+        return try JSONDecoder().decode(T.self, from: data)
     }
 }

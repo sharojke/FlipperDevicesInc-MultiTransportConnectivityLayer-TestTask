@@ -28,7 +28,6 @@ final class USBTransport: AnyDeviceTransport {
     private let mockDeviceInfo: DeviceInfo
     private let mockWiFiNetworks: [WiFiNetwork]
     private let connectsSuccessfully: Bool
-    private let sendsRequestSuccessfully: Bool
     
     var isAvailable: Bool {
         get async {
@@ -45,14 +44,12 @@ final class USBTransport: AnyDeviceTransport {
         connectionStateManager: AnyDeviceTransportConnectionStateManager,
         mockDeviceInfo: DeviceInfo,
         mockWiFiNetworks: [WiFiNetwork],
-        connectsSuccessfully: Bool = .random(),
-        sendsRequestSuccessfully: Bool = .random()
+        connectsSuccessfully: Bool = .random()
     ) {
         self.connectionStateManager = connectionStateManager
         self.mockDeviceInfo = mockDeviceInfo
         self.mockWiFiNetworks = mockWiFiNetworks
         self.connectsSuccessfully = connectsSuccessfully
-        self.sendsRequestSuccessfully = sendsRequestSuccessfully
     }
     
     func connect() async throws {
@@ -86,11 +83,7 @@ final class USBTransport: AnyDeviceTransport {
     }
     
     private func response<T: Decodable>(_ data: Data) async throws -> T {
-        if sendsRequestSuccessfully {
-            try await Task.veryLongSleep()
-            return try JSONDecoder().decode(T.self, from: data)
-        } else {
-            throw SendingRequestError()
-        }
+        try await Task.veryLongSleep()
+        return try JSONDecoder().decode(T.self, from: data)
     }
 }

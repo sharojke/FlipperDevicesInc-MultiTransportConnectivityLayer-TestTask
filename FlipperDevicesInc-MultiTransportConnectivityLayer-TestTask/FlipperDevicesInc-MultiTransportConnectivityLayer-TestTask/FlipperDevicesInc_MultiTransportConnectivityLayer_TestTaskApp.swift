@@ -62,7 +62,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .usb,
             mockWiFiNetworks: [.guest],
-//            connectsSuccessfully: false
+//            connectsSuccessfully: true
         )
         return decoratedDeviceTransport(transport)
     }

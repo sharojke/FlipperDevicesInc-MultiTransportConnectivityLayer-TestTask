@@ -1,5 +1,9 @@
 import Foundation
 
-struct HandlingUnsupportedEndpointError: Error {
+struct HandlingUnsupportedEndpointError: AnyError {
     let endpoint: String
+    
+    var description: String {
+        "\(Self.self) - \(endpoint)"
+    }
 }

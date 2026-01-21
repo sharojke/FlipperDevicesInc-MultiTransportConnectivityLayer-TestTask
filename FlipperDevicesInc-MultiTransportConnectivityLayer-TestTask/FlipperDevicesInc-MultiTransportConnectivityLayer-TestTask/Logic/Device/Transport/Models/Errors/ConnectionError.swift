@@ -1,3 +1,1 @@
-import Foundation
-
-struct ConnectionError: Error {}
+struct ConnectionError: AnyError {}

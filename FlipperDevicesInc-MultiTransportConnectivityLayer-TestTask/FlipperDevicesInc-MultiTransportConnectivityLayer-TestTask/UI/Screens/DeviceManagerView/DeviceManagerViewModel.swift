@@ -16,7 +16,7 @@ final class DeviceManagerViewModel: ObservableObject {
             do {
                 try await self?.deviceManager.connect()
             } catch {
-                self?.log("Connect failed: \(error.localizedDescription)")
+                self?.log("-- Connect failed: \(error.nsDescription)")
             }
         }
     }
@@ -26,7 +26,7 @@ final class DeviceManagerViewModel: ObservableObject {
             do {
                 try await self?.deviceManager.disconnect()
             } catch {
-                self?.log("Disconnect failed: \(error.localizedDescription)")
+                self?.log("-- Disconnect failed: \(error.nsDescription)")
             }
         }
     }
@@ -35,9 +35,9 @@ final class DeviceManagerViewModel: ObservableObject {
         Task { [weak self] in
             do {
                 let info = try await self?.deviceManager.deviceInfo()
-                self?.log("Device Info: \(info as Any)")
+                self?.log("- Device Info: \(info as Any)")
             } catch {
-                self?.log("Failed to get device info: \(error.localizedDescription)")
+                self?.log("-- Failed to get device info: \(error.nsDescription)")
             }
         }
     }
@@ -47,9 +47,9 @@ final class DeviceManagerViewModel: ObservableObject {
                 do {
                     let networks = try await self?.deviceManager.wifiNetworks()
                     let list = networks.map { "(\($0)\n" }
-                    self?.log("Wi-Fi Networks:\n\(list as Any)")
+                    self?.log("- Wi-Fi Networks:\n\(list as Any)")
                 } catch {
-                    self?.log("Failed to scan Wi-Fi networks: \(error.localizedDescription)")
+                    self?.log("-- Failed to scan Wi-Fi networks: \(error.nsDescription)")
                 }
             }
         }
@@ -61,9 +61,9 @@ final class DeviceManagerViewModel: ObservableObject {
             
             do {
                 try await self?.deviceManager.connectToWiFi(ssid: ssid, password: password)
-                self?.log("Device connected to Wi-Fi \(ssid).")
+                self?.log("- Device connected to Wi-Fi \(ssid).")
             } catch {
-                self?.log("Failed to connect device to Wi-Fi: \(error.localizedDescription)")
+                self?.log("-- Failed to connect device to Wi-Fi: \(error.nsDescription)")
             }
         }
     }
@@ -77,7 +77,7 @@ private extension DeviceManagerViewModel {
     func observeConnectionState() {
         Task { [weak self, deviceManager] in
             for await state in deviceManager.connectionStateStream {
-                self?.log("Connection state changed: \(state)")
+                self?.log("--- Connection state changed: \(state)")
             }
         }
     }

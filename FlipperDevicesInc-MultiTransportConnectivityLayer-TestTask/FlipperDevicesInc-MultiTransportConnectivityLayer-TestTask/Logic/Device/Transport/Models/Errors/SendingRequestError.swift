@@ -1,3 +1,1 @@
-import Foundation
-
-struct SendingRequestError: Error {}
+struct SendingRequestError: AnyError {}

@@ -3,11 +3,15 @@ import Foundation
 private enum SupportedEndpoint: CaseIterable {
     case deviceInfo
     case wifiNetworks
+    case wifiConnect
+    case wifiDisconnect
     
     var rawValue: String {
         switch self {
         case .deviceInfo: DeviceRequestEndpoint.deviceInfo
         case .wifiNetworks: DeviceRequestEndpoint.wifiNetworks
+        case .wifiConnect: DeviceRequestEndpoint.wifiConnect
+        case .wifiDisconnect: DeviceRequestEndpoint.wifiDisconnect
         }
     }
     
@@ -73,6 +77,8 @@ final class USBTransport: AnyDeviceTransport {
         switch SupportedEndpoint(endpoint: endpoint) {
         case .deviceInfo: data = try JSONEncoder().encode(mockDeviceInfo)
         case .wifiNetworks: data = try JSONEncoder().encode(mockWiFiNetworks)
+        case .wifiConnect: data = Data()
+        case .wifiDisconnect: data = Data()
         case .none: throw HandlingUnsupportedEndpointError(endpoint: endpoint)
         }
         

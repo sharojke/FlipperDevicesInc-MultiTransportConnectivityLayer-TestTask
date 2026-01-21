@@ -37,6 +37,6 @@ final class DeviceManager: AnyDeviceManager {
             method: .post,
             body: body
         )
-        let _: String = try await deviceTransport.send(request)
+        let _: Data = try await deviceTransport.send(request)
     }
 }

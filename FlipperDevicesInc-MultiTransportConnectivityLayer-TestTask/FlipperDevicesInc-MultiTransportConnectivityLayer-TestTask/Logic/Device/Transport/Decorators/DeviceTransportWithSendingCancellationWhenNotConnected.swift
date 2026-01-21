@@ -45,22 +45,24 @@ final class DeviceTransportWithSendingCancellationWhenNotConnected: AnyDeviceTra
     private func observeConnectionState() {
         observeConnectionStateTask.withLock { observeConnectionStateTask in
             observeConnectionStateTask = Task { [weak self] in
-                guard let self else { return }
-                
-                for await connectionState in decoratee.connectionStateStream {
-                    print(connectionState)
-                    
-                    switch connectionState {
-                    case .disconnected, .failed:
-                        sendTasks.withLock { task in
-                            task.values.forEach { $0() }
-                            task.removeAll()
-                        }
-                        
-                    case .discovering, .connecting, .connected:
-                        break
-                    }
+                await self?.runObserveConnectionStateTask()
+            }
+        }
+    }
+    
+    private func runObserveConnectionStateTask() async {
+        for await connectionState in decoratee.connectionStateStream {
+            print(connectionState)
+            
+            switch connectionState {
+            case .disconnected, .failed:
+                sendTasks.withLock { task in
+                    task.values.forEach { $0() }
+                    task.removeAll()
                 }
+                
+            case .discovering, .connecting, .connected:
+                break
             }
         }
     }

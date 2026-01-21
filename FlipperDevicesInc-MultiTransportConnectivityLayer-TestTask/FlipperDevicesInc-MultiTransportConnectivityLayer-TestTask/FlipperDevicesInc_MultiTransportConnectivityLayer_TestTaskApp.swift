@@ -20,7 +20,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
     
     private func bleTransport() -> AnyDeviceTransport {
         let transport = BLETransport(
-            connectionStateManager: DeviceTransportConnectionStateManager(),
+            connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .ble,
             mockWiFiNetworks: [.home]
         )
@@ -29,7 +29,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
     
     private func wifiTransport() -> AnyDeviceTransport {
         let transport = WiFiTransport(
-            connectionStateManager: DeviceTransportConnectionStateManager(),
+            connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .wifi
         )
         return decoratedDeviceTransport(transport)
@@ -37,7 +37,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
     
     private func usbTransport() -> AnyDeviceTransport {
         let transport = USBTransport(
-            connectionStateManager: DeviceTransportConnectionStateManager(),
+            connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .usb,
             mockWiFiNetworks: [.guest]
         )
@@ -48,5 +48,9 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
         deviceTransport
             .withSendingCancellationWhenNotConnected()
             .withSendingErrorWhenNotConnected()
+    }
+    
+    private func decoratedDeviceTransportConnectionStateManager() -> AnyDeviceTransportConnectionStateManager {
+        DeviceTransportConnectionStateManager().withSynchronization()
     }
 }

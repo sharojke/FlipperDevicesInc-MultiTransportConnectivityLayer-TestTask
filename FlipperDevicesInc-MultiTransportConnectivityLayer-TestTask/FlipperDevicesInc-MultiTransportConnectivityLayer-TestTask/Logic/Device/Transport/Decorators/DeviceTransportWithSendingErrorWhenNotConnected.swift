@@ -39,12 +39,14 @@ final class DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport 
     private func observeConnectionState() {
         observeConnectionStateTask.withLock { observeConnectionStateTask in
             observeConnectionStateTask = Task { [weak self] in
-                guard let self else { return }
-                
-                for await connectionState in decoratee.connectionStateStream {
-                    lastConnectionState.withLock { $0 = connectionState }
-                }
+                await self?.runObserveConnectionStateTask()
             }
+        }
+    }
+    
+    private func runObserveConnectionStateTask() async {
+        for await connectionState in decoratee.connectionStateStream {
+            lastConnectionState.withLock { $0 = connectionState }
         }
     }
     

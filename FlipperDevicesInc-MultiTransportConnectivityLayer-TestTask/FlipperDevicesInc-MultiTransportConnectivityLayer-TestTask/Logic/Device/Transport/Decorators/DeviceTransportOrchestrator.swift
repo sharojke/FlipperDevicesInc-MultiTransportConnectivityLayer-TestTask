@@ -83,29 +83,31 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
     private func observeConnectionState() {
         observeConnectionStateTask.withLock { observeConnectionStateTask in
             observeConnectionStateTask = Task { [weak self] in
-                guard let self else { return }
-                
-                async let primaryTask: Void = {
-                    for await primaryConnectionState in primary.connectionStateStream {
-                        switch activeDeviceTransport.withLock(\.self) {
-                        case .primary: handleReceivedConnectionState(primaryConnectionState)
-                        case .fallback: break
-                        }
-                    }
-                }()
-                
-                async let fallbackTask: Void = {
-                    for await fallbackConnectionState in fallback.connectionStateStream {
-                        switch activeDeviceTransport.withLock(\.self) {
-                        case .primary: break
-                        case .fallback: handleReceivedConnectionState(fallbackConnectionState)
-                        }
-                    }
-                }()
-                
-                _ = await (primaryTask, fallbackTask)
+                await self?.runObserveConnectionStateTask()
             }
         }
+    }
+    
+    private func runObserveConnectionStateTask() async {
+        async let primaryTask: Void = {
+            for await primaryConnectionState in primary.connectionStateStream {
+                switch activeDeviceTransport.withLock(\.self) {
+                case .primary: handleReceivedConnectionState(primaryConnectionState)
+                case .fallback: break
+                }
+            }
+        }()
+        
+        async let fallbackTask: Void = {
+            for await fallbackConnectionState in fallback.connectionStateStream {
+                switch activeDeviceTransport.withLock(\.self) {
+                case .primary: break
+                case .fallback: handleReceivedConnectionState(fallbackConnectionState)
+                }
+            }
+        }()
+        
+        _ = await (primaryTask, fallbackTask)
     }
     
     private func handleReceivedConnectionState(_ connectionState: ConnectionState) {

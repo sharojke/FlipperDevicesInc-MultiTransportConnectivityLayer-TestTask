@@ -47,7 +47,7 @@ final class WiFiTransport: AnyDeviceTransport {
     }
     
     func connect() async throws {
-        await connectionStateManager.connect {
+        await connectionStateManager.connect { [connectsSuccessfully] in
             try await Task.longSleep()
             guard !connectsSuccessfully else { return }
             

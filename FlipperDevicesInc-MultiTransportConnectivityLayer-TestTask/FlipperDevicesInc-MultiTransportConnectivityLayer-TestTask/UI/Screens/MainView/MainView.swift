@@ -1,14 +1,24 @@
 import SwiftUI
 
 struct MainView: View {
-    let onDidPressDeviceManager: () -> Void
-    
+    @ObservedObject var viewModel: MainViewModel
+
     var body: some View {
         VStack {
+            Toggle("BLE Connects Successfully", isOn: $viewModel.bleConnectsSuccessfully)
+                .padding()
+            
+            Toggle("WiFi Connects Successfully", isOn: $viewModel.wifiConnectsSuccessfully)
+                .padding()
+            
+            Toggle("USB Connects Successfully", isOn: $viewModel.usbConnectsSuccessfully)
+                .padding()
+                
             Text(description())
                 .padding()
+            
             Button("Show DeviceManagerView") {
-                onDidPressDeviceManager()
+                viewModel.handleDidPressShowDeviceManager()
             }
             .foregroundStyle(.white)
             .padding()
@@ -25,9 +35,8 @@ struct MainView: View {
 
         DeviceManager is configured using AnyDeviceTransport which is DeviceTransportOrchestrator under the hood.
         The Orchestrator reconnects to another transport (BLE → WiFi → USB) when the connection fails.
-        A successful connection is randomly set. 
         
-        So if you have the same behavior, just pop and push DeviceManagerView again
+        You can configure a successful connection using the toggles above.
         """
     }
 }

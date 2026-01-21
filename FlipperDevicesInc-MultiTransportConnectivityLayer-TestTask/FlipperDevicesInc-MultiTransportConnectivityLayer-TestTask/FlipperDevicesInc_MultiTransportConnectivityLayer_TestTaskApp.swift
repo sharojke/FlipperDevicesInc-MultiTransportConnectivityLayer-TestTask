@@ -3,6 +3,9 @@ import SwiftUI
 @main
 struct FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp: App {
     @StateObject private var router = Router()
+    @State private var bleConnectsSuccessfully = true
+    @State private var wifiConnectsSuccessfully = true
+    @State private var usbConnectsSuccessfully = true
     
     var body: some Scene {
         WindowGroup {
@@ -13,7 +16,12 @@ struct FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp: App {
 
 private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp {
     func mainView() -> some View {
-        MainView { router.push(.deviceManager) }
+        let viewModel = MainViewModel(
+            bleConnectsSuccessfully: $bleConnectsSuccessfully,
+            wifiConnectsSuccessfully: $wifiConnectsSuccessfully,
+            usbConnectsSuccessfully: $usbConnectsSuccessfully
+        ) { router.push(.deviceManager) }
+        return MainView(viewModel: viewModel)
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .deviceManager: deviceManagerView()
@@ -43,7 +51,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .ble,
             mockWiFiNetworks: [.home],
-//            connectsSuccessfully: false
+            connectsSuccessfully: bleConnectsSuccessfully
         )
         return decoratedDeviceTransport(transport)
     }
@@ -52,7 +60,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
         let transport = WiFiTransport(
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .wifi,
-//            connectsSuccessfully: false
+            connectsSuccessfully: wifiConnectsSuccessfully
         )
         return decoratedDeviceTransport(transport)
     }
@@ -62,7 +70,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .usb,
             mockWiFiNetworks: [.guest],
-//            connectsSuccessfully: true
+            connectsSuccessfully: usbConnectsSuccessfully
         )
         return decoratedDeviceTransport(transport)
     }

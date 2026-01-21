@@ -19,7 +19,7 @@ struct MainView: View {
     
     private func description() -> String {
         """
-        DeviceManagerView holds a DeviceManager, 
+        DeviceManagerViewModel holds a DeviceManager, 
         that can perform Device Operations 
         such as connect/disconnect/get device info/etc.
 

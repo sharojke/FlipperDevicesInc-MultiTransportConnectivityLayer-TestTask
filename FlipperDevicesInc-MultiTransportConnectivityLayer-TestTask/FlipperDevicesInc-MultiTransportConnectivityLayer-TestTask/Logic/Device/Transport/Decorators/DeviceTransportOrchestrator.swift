@@ -42,11 +42,7 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
     func connect() async throws {
         switch activeDeviceTransport.withLock(\.self) {
         case .primary(let transport):
-            switch lastConnectionState.withLock(\.self) {
-            case .connected:
-                break
-                
-            default:
+            try await handleLastConnectionStateIfNotConnected {
                 do {
                     try await transport.connect()
                 } catch {
@@ -58,11 +54,7 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
             }
             
         case .fallback:
-            switch lastConnectionState.withLock(\.self) {
-            case .connected:
-                break
-                
-            default:
+            try await handleLastConnectionStateIfNotConnected {
                 self.activeDeviceTransport.withLock { $0 = .primary(primary) }
                 try await connect()
             }
@@ -87,6 +79,13 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
             observeConnectionStateTask = Task { [weak self] in
                 await self?.runObserveConnectionStateTask()
             }
+        }
+    }
+    
+    private func handleLastConnectionStateIfNotConnected(_ handle: () async throws -> Void) async throws {
+        switch lastConnectionState.withLock(\.self) {
+        case .connected: break
+        default: try await handle()
         }
     }
     

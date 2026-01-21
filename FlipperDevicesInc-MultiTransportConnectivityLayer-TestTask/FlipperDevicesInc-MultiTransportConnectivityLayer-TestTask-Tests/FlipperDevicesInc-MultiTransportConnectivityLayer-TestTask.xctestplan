@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "75AEDFE8-FE9D-46B7-9ACF-6D2A86FB280D",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.xcodeproj",
+      "identifier" : "2D962BFA2F1ECBA9007A3EAB",
+      "name" : "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask"
+    },
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.xcodeproj",
+        "identifier" : "2D12EF452F21710200C0EDF6",
+        "name" : "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

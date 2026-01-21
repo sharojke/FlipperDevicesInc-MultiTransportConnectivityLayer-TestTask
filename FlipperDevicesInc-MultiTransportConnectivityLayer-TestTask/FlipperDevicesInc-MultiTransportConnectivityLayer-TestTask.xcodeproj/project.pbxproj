@@ -6,11 +6,27 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		2D12EF4A2F21710200C0EDF6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D962BF32F1ECBA9007A3EAB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D962BFA2F1ECBA9007A3EAB;
+			remoteInfo = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		2D12EF462F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D962BFB2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		2D12EF472F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests";
+			sourceTree = "<group>";
+		};
 		2D962BFD2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask";
@@ -19,6 +35,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2D12EF432F21710200C0EDF6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D962BF82F1ECBA9007A3EAB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				2D962BFD2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask */,
+				2D12EF472F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests */,
 				2D962BFC2F1ECBA9007A3EAB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				2D962BFB2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.app */,
+				2D12EF462F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +73,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2D12EF452F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D12EF4C2F21710200C0EDF6 /* Build configuration list for PBXNativeTarget "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests" */;
+			buildPhases = (
+				2D12EF422F21710200C0EDF6 /* Sources */,
+				2D12EF432F21710200C0EDF6 /* Frameworks */,
+				2D12EF442F21710200C0EDF6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2D12EF4B2F21710200C0EDF6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2D12EF472F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests */,
+			);
+			name = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests";
+			packageProductDependencies = (
+			);
+			productName = "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests";
+			productReference = 2D12EF462F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		2D962BFA2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D962C062F1ECBAA007A3EAB /* Build configuration list for PBXNativeTarget "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask" */;
@@ -81,6 +129,10 @@
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					2D12EF452F21710200C0EDF6 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 2D962BFA2F1ECBA9007A3EAB;
+					};
 					2D962BFA2F1ECBA9007A3EAB = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -101,11 +153,19 @@
 			projectRoot = "";
 			targets = (
 				2D962BFA2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask */,
+				2D12EF452F21710200C0EDF6 /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2D12EF442F21710200C0EDF6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D962BF92F1ECBA9007A3EAB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -139,6 +199,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2D12EF422F21710200C0EDF6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D962BF72F1ECBA9007A3EAB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,7 +215,51 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2D12EF4B2F21710200C0EDF6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D962BFA2F1ECBA9007A3EAB /* FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask */;
+			targetProxy = 2D12EF4A2F21710200C0EDF6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2D12EF4D2F21710200C0EDF6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 397TGGAQ4J;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "FlipperDevicesInc.MultiTransportConnectivityLayer.TestTask.Tests.FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask";
+			};
+			name = Debug;
+		};
+		2D12EF4E2F21710200C0EDF6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 397TGGAQ4J;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "FlipperDevicesInc.MultiTransportConnectivityLayer.TestTask.Tests.FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask";
+			};
+			name = Release;
+		};
 		2D962C042F1ECBAA007A3EAB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -329,6 +440,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2D12EF4C2F21710200C0EDF6 /* Build configuration list for PBXNativeTarget "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D12EF4D2F21710200C0EDF6 /* Debug */,
+				2D12EF4E2F21710200C0EDF6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2D962BF62F1ECBA9007A3EAB /* Build configuration list for PBXProject "FlipperDevicesInc-MultiTransportConnectivityLayer-TestTask" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

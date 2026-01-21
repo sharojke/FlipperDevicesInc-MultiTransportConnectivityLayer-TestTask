@@ -4,6 +4,7 @@ import Synchronization
 final class DeviceTransportWithSendingCancellationWhenNotConnected: AnyDeviceTransport {
     private let decoratee: AnyDeviceTransport
     private let sendTasks = Mutex<[UUID: () -> Void]>([:])
+    private let observeConnectionStateTask = Mutex<Task<Void, Never>?>(nil)
 
     var isAvailable: Bool {
         get async {
@@ -30,35 +31,42 @@ final class DeviceTransportWithSendingCancellationWhenNotConnected: AnyDeviceTra
     
     func send<T: Decodable & Sendable>(_ request: DeviceRequest) async throws -> T {
         let id = UUID()
-        defer { sendTasks.withLock { _ = $0.removeValue(forKey: id) } }
         
         let task = Task<T, Error> { [decoratee] in
             try await decoratee.send(request)
         }
         
         sendTasks.withLock { $0[id] = task.cancel }
-        let result = try await task.value
-        try Task.checkCancellation()
-        return result
+        defer { sendTasks.withLock { _ = $0.removeValue(forKey: id) } }
+        
+        return try await task.value
     }
     
     private func observeConnectionState() {
-        Task { [weak self] in
-            guard let self else { return }
-            
-            for await connectionState in decoratee.connectionStateStream {
-                switch connectionState {
-                case .disconnected, .failed:
-                    sendTasks.withLock { task in
-                        task.values.forEach { $0() }
-                        task.removeAll()
-                    }
+        observeConnectionStateTask.withLock { observeConnectionStateTask in
+            observeConnectionStateTask = Task { [weak self] in
+                guard let self else { return }
+                
+                for await connectionState in decoratee.connectionStateStream {
+                    print(connectionState)
                     
-                case .discovering, .connecting, .connected:
-                    break
+                    switch connectionState {
+                    case .disconnected, .failed:
+                        sendTasks.withLock { task in
+                            task.values.forEach { $0() }
+                            task.removeAll()
+                        }
+                        
+                    case .discovering, .connecting, .connected:
+                        break
+                    }
                 }
             }
         }
+    }
+    
+    deinit {
+        observeConnectionStateTask.withLock { $0?.cancel() }
     }
 }
 

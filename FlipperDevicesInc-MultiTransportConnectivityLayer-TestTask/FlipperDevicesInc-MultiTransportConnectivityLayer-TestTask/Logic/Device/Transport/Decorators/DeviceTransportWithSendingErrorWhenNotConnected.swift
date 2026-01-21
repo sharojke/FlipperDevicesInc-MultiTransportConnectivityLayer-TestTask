@@ -4,6 +4,7 @@ import Synchronization
 final class DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport {
     private let decoratee: AnyDeviceTransport
     private let lastConnectionState = Mutex<ConnectionState?>(nil)
+    private let observeConnectionStateTask = Mutex<Task<Void, Never>?>(nil)
 
     var isAvailable: Bool {
         get async {
@@ -36,13 +37,19 @@ final class DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport 
     }
     
     private func observeConnectionState() {
-        Task { [weak self] in
-            guard let self else { return }
-            
-            for await connectionState in decoratee.connectionStateStream {
-                lastConnectionState.withLock { $0 = connectionState }
+        observeConnectionStateTask.withLock { observeConnectionStateTask in
+            observeConnectionStateTask = Task { [weak self] in
+                guard let self else { return }
+                
+                for await connectionState in decoratee.connectionStateStream {
+                    lastConnectionState.withLock { $0 = connectionState }
+                }
             }
         }
+    }
+    
+    deinit {
+        observeConnectionStateTask.withLock { $0?.cancel() }
     }
 }
 

@@ -6,7 +6,7 @@ protocol AnyDeviceTransportConnectionStateManager: Sendable {
     var connectionState: ConnectionState { get async }
     var connectionStateStream: AsyncStream<ConnectionState> { get }
     
-    func connect(_ connect: @escaping Action) async
-    func disconnect(_ disconnect: @escaping Action) async
+    func connect(_ connect: @escaping Action) async throws
+    func disconnect(_ disconnect: @escaping Action) async throws
     func failConnection(with error: Error) async
 }

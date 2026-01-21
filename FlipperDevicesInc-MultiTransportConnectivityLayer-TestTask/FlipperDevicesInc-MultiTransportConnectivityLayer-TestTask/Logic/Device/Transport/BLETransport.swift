@@ -53,7 +53,7 @@ final class BLETransport: AnyDeviceTransport {
     }
     
     func connect() async throws {
-        await connectionStateManager.connect { [connectsSuccessfully] in
+        try await connectionStateManager.connect { [connectsSuccessfully] in
             try await Task.longSleep()
             guard !connectsSuccessfully else { return }
             
@@ -62,7 +62,7 @@ final class BLETransport: AnyDeviceTransport {
     }
     
     func disconnect() async throws {
-        await connectionStateManager.disconnect {
+        try await connectionStateManager.disconnect {
             try await Task.mediumSleep()
         }
     }

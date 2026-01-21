@@ -13,7 +13,7 @@ actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateMa
         self.connectionState = .disconnected
     }
 
-    func connect(_ connect: Action) async {
+    func connect(_ connect: Action) async throws {
         guard connectionState.needsToConnect else { return }
         
         setConnectionState(.connecting)
@@ -23,16 +23,19 @@ actor DeviceTransportConnectionStateManager: AnyDeviceTransportConnectionStateMa
             setConnectionState(.connected)
         } catch {
             failConnection(with: error)
+            throw error
         }
     }
     
-    func disconnect(_ disconnect: Action) async {
+    func disconnect(_ disconnect: Action) async throws {
         guard connectionState.needsToDisconnect else { return }
         
         do {
             try await disconnect()
             setConnectionState(.disconnected)
-        } catch {}
+        } catch {
+            throw error
+        }
     }
     
     func failConnection(with error: Error) {

@@ -62,7 +62,7 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
                 
             default:
                 self.activeDeviceTransport.withLock { $0 = .primary(primary) }
-                try await primary.connect()
+                try await connect()
             }
         }
     }

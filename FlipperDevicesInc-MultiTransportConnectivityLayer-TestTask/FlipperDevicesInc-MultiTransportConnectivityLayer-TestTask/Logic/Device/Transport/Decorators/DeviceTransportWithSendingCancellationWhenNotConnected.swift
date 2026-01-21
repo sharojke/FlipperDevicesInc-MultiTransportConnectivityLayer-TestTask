@@ -51,9 +51,7 @@ final class DeviceTransportWithSendingCancellationWhenNotConnected: AnyDeviceTra
     }
     
     private func runObserveConnectionStateTask() async {
-        for await connectionState in decoratee.connectionStateStream {
-            print(connectionState)
-            
+        for await connectionState in decoratee.connectionStateStream {            
             switch connectionState {
             case .disconnected, .failed:
                 sendTasks.withLock { task in

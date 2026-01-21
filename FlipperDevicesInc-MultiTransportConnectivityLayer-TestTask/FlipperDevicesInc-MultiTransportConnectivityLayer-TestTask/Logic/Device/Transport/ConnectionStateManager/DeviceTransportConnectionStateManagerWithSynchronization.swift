@@ -2,7 +2,7 @@ import Foundation
 
 actor DeviceTransportConnectionStateManagerWithSynchronization: AnyDeviceTransportConnectionStateManager {
     private let decoratee: AnyDeviceTransportConnectionStateManager
-    private var currentTask: Task<Void, Never>?
+    private var currentTask: Task<Void, Error>?
     
     var connectionState: ConnectionState {
         get async {
@@ -18,32 +18,33 @@ actor DeviceTransportConnectionStateManagerWithSynchronization: AnyDeviceTranspo
         self.decoratee = decoratee
     }
     
-    func connect(_ connect: @escaping Action) {
-        executeOperation { [decoratee] in
-            await decoratee.connect(connect)
+    func connect(_ connect: @escaping Action) async throws {
+        try await executeOperation { [decoratee] in
+            try await decoratee.connect(connect)
         }
     }
     
-    func disconnect(_ disconnect: @escaping Action) {
-        executeOperation { [decoratee] in
-            await decoratee.disconnect(disconnect)
+    func disconnect(_ disconnect: @escaping Action) async throws {
+        try await executeOperation { [decoratee] in
+            try await decoratee.disconnect(disconnect)
         }
     }
     
-    func failConnection(with error: Error) {
-        executeOperation { [decoratee] in
+    func failConnection(with error: Error) async {
+        try? await executeOperation { [decoratee] in
             await decoratee.failConnection(with: error)
         }
     }
     
-    private func executeOperation(_ operation: @escaping @Sendable () async -> Void) {
+    private func executeOperation(_ operation: @escaping @Sendable () async throws -> Void) async throws {
         currentTask?.cancel()
 
         currentTask = Task {
-            guard !Task.isCancelled else { return }
-            
-            await operation()
+            try Task.checkCancellation()
+            try await operation()
         }
+        
+        try await currentTask?.value
     }
     
     deinit {

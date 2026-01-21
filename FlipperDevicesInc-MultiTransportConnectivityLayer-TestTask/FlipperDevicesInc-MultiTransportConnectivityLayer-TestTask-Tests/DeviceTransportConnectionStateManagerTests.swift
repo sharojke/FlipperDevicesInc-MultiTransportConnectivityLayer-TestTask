@@ -53,7 +53,7 @@ final class DeviceTransportConnectionStateManagerTests: XCTestCase {
         let state = await sut.connectionState
         
         if case .failed(let receivedError as NSError) = state {
-            XCTAssertEqual(expectedError, receivedError)
+            XCTAssertEqual(receivedError, expectedError)
         } else {
             XCTFail("State should be failed")
         }

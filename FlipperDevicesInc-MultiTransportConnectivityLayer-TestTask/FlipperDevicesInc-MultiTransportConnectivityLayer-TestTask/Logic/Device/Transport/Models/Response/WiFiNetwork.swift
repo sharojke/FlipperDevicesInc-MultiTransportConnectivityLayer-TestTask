@@ -1,6 +1,6 @@
 import Foundation
 
-struct WiFiNetwork: Codable {
+struct WiFiNetwork: Codable, Equatable {
     let ssid: String
     let signalStrength: Int
     let securityType: SecurityType

@@ -1,6 +1,6 @@
 import Foundation
 
-struct DeviceInfo: Codable {
+struct DeviceInfo: Codable, Equatable {
     let name: String
     let firmwareVersion: String
     let batteryLevel: Int

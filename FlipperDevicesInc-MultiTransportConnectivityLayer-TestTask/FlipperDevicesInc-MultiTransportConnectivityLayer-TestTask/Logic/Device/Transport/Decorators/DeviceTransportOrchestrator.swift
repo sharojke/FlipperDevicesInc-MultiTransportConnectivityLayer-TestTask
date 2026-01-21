@@ -50,6 +50,8 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
                 do {
                     try await transport.connect()
                 } catch {
+                    if error is CancellationError { return }
+                    
                     self.activeDeviceTransport.withLock { $0 = .fallback(fallback) }
                     try await fallback.connect()
                 }

@@ -83,7 +83,7 @@ final class BLETransport: AnyDeviceTransport {
     }
     
     private func response<T: Decodable>(_ data: Data) async throws -> T {
-        try await Task.veryLongSleep()
+        try await Task.longSleep()
         return try JSONDecoder().decode(T.self, from: data)
     }
 }

@@ -2,23 +2,43 @@ import SwiftUI
 
 @main
 struct FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp: App {
-    private lazy var deviceManager = DeviceManager(deviceTransport: deviceTransportOrchestrator())
+    @StateObject private var router = Router()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack(path: $router.path, root: mainView)
         }
     }
 }
 
 private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp {
+    func mainView() -> some View {
+        MainView { router.push(.deviceManager) }
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .deviceManager: deviceManagerView()
+                }
+            }
+    }
+    
+    func deviceManagerView() -> some View {
+        let viewModel = DeviceManagerViewModel(deviceManager: deviceManager())
+        return DeviceManagerView(viewModel: viewModel)
+    }
+}
+
+private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp {
+    func deviceManager() -> AnyDeviceManager {
+        DeviceManager(deviceTransport: deviceTransportOrchestrator())
+    }
+    
     func deviceTransportOrchestrator() -> AnyDeviceTransport {
         bleTransport()
             .withFallback(wifiTransport())
             .withFallback(usbTransport())
     }
     
-    private func bleTransport() -> AnyDeviceTransport {
+    func bleTransport() -> AnyDeviceTransport {
         let transport = BLETransport(
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .ble,
@@ -27,7 +47,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
         return decoratedDeviceTransport(transport)
     }
     
-    private func wifiTransport() -> AnyDeviceTransport {
+    func wifiTransport() -> AnyDeviceTransport {
         let transport = WiFiTransport(
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .wifi
@@ -35,7 +55,7 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
         return decoratedDeviceTransport(transport)
     }
     
-    private func usbTransport() -> AnyDeviceTransport {
+    func usbTransport() -> AnyDeviceTransport {
         let transport = USBTransport(
             connectionStateManager: decoratedDeviceTransportConnectionStateManager(),
             mockDeviceInfo: .usb,
@@ -44,13 +64,13 @@ private extension FlipperDevicesInc_MultiTransportConnectivityLayer_TestTaskApp 
         return decoratedDeviceTransport(transport)
     }
     
-    private func decoratedDeviceTransport(_ deviceTransport: AnyDeviceTransport) -> AnyDeviceTransport {
+    func decoratedDeviceTransport(_ deviceTransport: AnyDeviceTransport) -> AnyDeviceTransport {
         deviceTransport
             .withSendingCancellationWhenNotConnected()
             .withSendingErrorWhenNotConnected()
     }
     
-    private func decoratedDeviceTransportConnectionStateManager() -> AnyDeviceTransportConnectionStateManager {
+    func decoratedDeviceTransportConnectionStateManager() -> AnyDeviceTransportConnectionStateManager {
         DeviceTransportConnectionStateManager().withSynchronization()
     }
 }

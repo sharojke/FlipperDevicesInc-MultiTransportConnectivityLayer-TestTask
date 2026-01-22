@@ -3,6 +3,7 @@ import Foundation
 @MainActor
 final class DeviceManagerViewModel: ObservableObject {
     private let deviceManager: AnyDeviceManager
+    private var observeConnectionStateTask: Task<Void, Never>?
     
     @Published var consoleText: String = ""
     
@@ -53,6 +54,10 @@ final class DeviceManagerViewModel: ObservableObject {
             }
         }
     }
+    
+    deinit {
+        observeConnectionStateTask?.cancel()
+    }
 }
 
 private extension DeviceManagerViewModel {
@@ -61,7 +66,7 @@ private extension DeviceManagerViewModel {
     }
     
     func observeConnectionState() {
-        Task { [weak self, deviceManager] in
+        observeConnectionStateTask = Task { [weak self, deviceManager] in
             for await state in deviceManager.connectionStateStream {
                 self?.log("--- Connection state changed: \(state)")
             }

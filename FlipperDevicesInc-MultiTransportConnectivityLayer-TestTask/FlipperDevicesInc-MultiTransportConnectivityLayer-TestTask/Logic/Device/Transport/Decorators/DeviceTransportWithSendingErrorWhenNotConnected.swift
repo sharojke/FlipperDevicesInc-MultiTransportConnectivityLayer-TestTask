@@ -1,10 +1,9 @@
 import Foundation
-import Synchronization
 
-final class DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport {
+actor DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport {
     private let decoratee: AnyDeviceTransport
-    private let lastConnectionState = Mutex<ConnectionState?>(nil)
-    private let observeConnectionStateTask = Mutex<Task<Void, Never>?>(nil)
+    private var lastConnectionState: ConnectionState?
+    private var observeConnectionStateTask: Task<Void, Never>?
 
     var isAvailable: Bool {
         get async {
@@ -12,13 +11,16 @@ final class DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport 
         }
     }
     
-    var connectionStateStream: AsyncStream<ConnectionState> {
+    nonisolated var connectionStateStream: AsyncStream<ConnectionState> {
         decoratee.connectionStateStream
     }
     
     init(decoratee: AnyDeviceTransport) {
         self.decoratee = decoratee
-        observeConnectionState()
+        
+        Task { [weak self] in
+            await self?.observeConnectionState()
+        }
     }
     
     func connect() async throws {
@@ -30,28 +32,26 @@ final class DeviceTransportWithSendingErrorWhenNotConnected: AnyDeviceTransport 
     }
     
     func send<T: Decodable & Sendable>(_ request: DeviceRequest) async throws -> T {
-        switch lastConnectionState.withLock(\.self) {
+        switch lastConnectionState {
         case .connected: return try await decoratee.send(request)
         default: throw SendingRequestError()
         }
     }
     
     private func observeConnectionState() {
-        observeConnectionStateTask.withLock { observeConnectionStateTask in
-            observeConnectionStateTask = Task { [weak self] in
-                await self?.runObserveConnectionStateTask()
+        observeConnectionStateTask = Task { [weak self, decoratee] in
+            for await connectionState in decoratee.connectionStateStream {
+                await self?.setLastConnectionState(connectionState)
             }
         }
     }
     
-    private func runObserveConnectionStateTask() async {
-        for await connectionState in decoratee.connectionStateStream {
-            lastConnectionState.withLock { $0 = connectionState }
-        }
+    private func setLastConnectionState(_ connectionState: ConnectionState) {
+        lastConnectionState = connectionState
     }
     
     deinit {
-        observeConnectionStateTask.withLock { $0?.cancel() }
+        observeConnectionStateTask?.cancel()
     }
 }
 

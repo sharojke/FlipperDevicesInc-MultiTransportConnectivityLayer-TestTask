@@ -1,29 +1,30 @@
 import Foundation
-import Synchronization
 
 private enum ActiveDeviceTransport {
     case primary(AnyDeviceTransport)
     case fallback(AnyDeviceTransport)
 }
 
-final class DeviceTransportOrchestrator: AnyDeviceTransport {
+actor DeviceTransportOrchestrator: AnyDeviceTransport {
     private let primary: AnyDeviceTransport
     private let fallback: AnyDeviceTransport
-    private let activeDeviceTransport: Mutex<ActiveDeviceTransport>
     private let multicastConnectionStateStream: MulticastAsyncStream<ConnectionState>
-    private let lastConnectionState = Mutex<ConnectionState?>(nil)
-    private let observeConnectionStateTask = Mutex<Task<Void, Never>?>(nil)
+    
+    private var activeDeviceTransport: ActiveDeviceTransport
+    private var lastConnectionState: ConnectionState?
+    private var observePrimaryConnectionStateTask: Task<Void, Never>?
+    private var observeFallbackConnectionStateTask: Task<Void, Never>?
 
     var isAvailable: Bool {
         get async {
-            switch activeDeviceTransport.withLock(\.self) {
+            switch activeDeviceTransport {
             case .primary(let transport), .fallback(let transport):
                 return await transport.isAvailable
             }
         }
     }
     
-    var connectionStateStream: AsyncStream<ConnectionState> {
+    nonisolated var connectionStateStream: AsyncStream<ConnectionState> {
         multicastConnectionStateStream.stream()
     }
     
@@ -34,13 +35,16 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
     ) {
         self.primary = primary
         self.fallback = fallback
-        self.activeDeviceTransport = Mutex(.primary(primary))
         self.multicastConnectionStateStream = multicastConnectionStateStream
-        observeConnectionState()
+        self.activeDeviceTransport = .primary(primary)
+        
+        Task { [weak self] in
+            await self?.observeConnectionState()
+        }
     }
     
     func connect() async throws {
-        switch activeDeviceTransport.withLock(\.self) {
+        switch activeDeviceTransport {
         case .primary(let transport):
             try await handleLastConnectionStateIfNotConnected {
                 do {
@@ -48,76 +52,68 @@ final class DeviceTransportOrchestrator: AnyDeviceTransport {
                 } catch {
                     if error is CancellationError { return }
                     
-                    self.activeDeviceTransport.withLock { $0 = .fallback(fallback) }
+                    self.activeDeviceTransport = .fallback(fallback)
                     try await fallback.connect()
                 }
             }
             
         case .fallback:
             try await handleLastConnectionStateIfNotConnected {
-                self.activeDeviceTransport.withLock { $0 = .primary(primary) }
+                self.activeDeviceTransport = .primary(primary)
                 try await connect()
             }
         }
     }
     
     func disconnect() async throws {
-        switch activeDeviceTransport.withLock(\.self) {
-        case .primary(let transport), .fallback(let transport): try await transport.disconnect()
+        switch activeDeviceTransport {
+        case .primary(let transport), .fallback(let transport):
+            try await transport.disconnect()
         }
     }
     
     func send<T: Decodable & Sendable>(_ request: DeviceRequest) async throws -> T {
-        switch activeDeviceTransport.withLock(\.self) {
+        switch activeDeviceTransport {
         case .primary(let transport), .fallback(let transport):
             try await transport.send(request)
         }
     }
     
     private func observeConnectionState() {
-        observeConnectionStateTask.withLock { observeConnectionStateTask in
-            observeConnectionStateTask = Task { [weak self] in
-                await self?.runObserveConnectionStateTask()
+        observePrimaryConnectionStateTask = Task { [weak self, primary] in
+            for await connectionState in primary.connectionStateStream {
+                switch await self?.activeDeviceTransport {
+                case .primary: await self?.handleReceivedConnectionState(connectionState)
+                case .fallback, .none: break
+                }
+            }
+        }
+        
+        observeFallbackConnectionStateTask = Task { [weak self, fallback] in
+            for await connectionState in fallback.connectionStateStream {
+                switch await self?.activeDeviceTransport {
+                case .primary: break
+                case .fallback, .none: await self?.handleReceivedConnectionState(connectionState)
+                }
             }
         }
     }
     
     private func handleLastConnectionStateIfNotConnected(_ handle: () async throws -> Void) async throws {
-        switch lastConnectionState.withLock(\.self) {
+        switch lastConnectionState {
         case .connected: break
         default: try await handle()
         }
     }
     
-    private func runObserveConnectionStateTask() async {
-        async let primaryTask: Void = {
-            for await primaryConnectionState in primary.connectionStateStream {
-                switch activeDeviceTransport.withLock(\.self) {
-                case .primary: handleReceivedConnectionState(primaryConnectionState)
-                case .fallback: break
-                }
-            }
-        }()
-        
-        async let fallbackTask: Void = {
-            for await fallbackConnectionState in fallback.connectionStateStream {
-                switch activeDeviceTransport.withLock(\.self) {
-                case .primary: break
-                case .fallback: handleReceivedConnectionState(fallbackConnectionState)
-                }
-            }
-        }()
-        
-        _ = await (primaryTask, fallbackTask)
-    }
-    
     private func handleReceivedConnectionState(_ connectionState: ConnectionState) {
-        lastConnectionState.withLock { $0 = connectionState }
+        lastConnectionState = connectionState
         multicastConnectionStateStream.yield(connectionState)
     }
     
     deinit {
-        observeConnectionStateTask.withLock { $0?.cancel() }
+        observePrimaryConnectionStateTask?.cancel()
+        observeFallbackConnectionStateTask?.cancel()
     }
 }
 

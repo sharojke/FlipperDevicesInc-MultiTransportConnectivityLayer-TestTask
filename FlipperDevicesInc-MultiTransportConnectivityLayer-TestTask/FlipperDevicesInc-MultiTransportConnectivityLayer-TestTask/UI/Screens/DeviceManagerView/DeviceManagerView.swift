@@ -15,9 +15,6 @@ struct DeviceManagerView: View {
                     Button("deviceInfo") { viewModel.handleDidPressDeviceInfo() }
                     Button("wifiNetworks") { viewModel.handleDidPressWiFiNetworks() }
                 }
-                VStack(spacing: spacing) {
-                    Button("connectToWiFi") { viewModel.handleDidPressConnectToWiFi() }
-                }
             }
             
             ScrollView {

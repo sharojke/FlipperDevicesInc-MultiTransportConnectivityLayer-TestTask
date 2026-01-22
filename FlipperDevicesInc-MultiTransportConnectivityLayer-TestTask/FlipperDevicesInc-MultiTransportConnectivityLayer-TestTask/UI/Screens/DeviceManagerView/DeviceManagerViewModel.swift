@@ -41,29 +41,15 @@ final class DeviceManagerViewModel: ObservableObject {
             }
         }
     }
-        
-        func handleDidPressWiFiNetworks() {
-            Task { [weak self] in
-                do {
-                    let networks = try await self?.deviceManager.wifiNetworks()
-                    let list = networks.map { "(\($0)\n" }
-                    self?.log("- Wi-Fi Networks:\n\(list as Any)")
-                } catch {
-                    self?.log("-- Failed to scan Wi-Fi networks: \(error.nsDescription)")
-                }
-            }
-        }
     
-    func handleDidPressConnectToWiFi() {
+    func handleDidPressWiFiNetworks() {
         Task { [weak self] in
-            let ssid = "MyWiSSID"
-            let password = "123"
-            
             do {
-                try await self?.deviceManager.connectToWiFi(ssid: ssid, password: password)
-                self?.log("- Device connected to Wi-Fi \(ssid).")
+                let networks = try await self?.deviceManager.wifiNetworks()
+                let list = networks.map { "(\($0)\n" }
+                self?.log("- Wi-Fi Networks:\n\(list as Any)")
             } catch {
-                self?.log("-- Failed to connect device to Wi-Fi: \(error.nsDescription)")
+                self?.log("-- Failed to scan Wi-Fi networks: \(error.nsDescription)")
             }
         }
     }
